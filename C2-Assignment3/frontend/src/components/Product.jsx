@@ -4,6 +4,8 @@ import { Container, Form } from 'react-bootstrap';
 import { Route } from 'react-router-dom';
 import ProductDetail from './ProductDetail';
 import { Input, Label, Button } from "reactstrap";
+import {faRedo} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 class Product extends React.Component {
     constructor(props) {
@@ -67,8 +69,20 @@ class Product extends React.Component {
                     </div>
                 </div>);
 
-        const {transactions} = this.state
-        const activeTransactions = transactions.filter(transaction => transaction.orderStatus !== 'Delivered')
+        let {transactions} = this.state
+        let activeTransactions = transactions.sort((transaction1,transaction2) => {
+            if(transaction2.deliveryDate < transaction1.deliveryDate){
+                return -1;
+            }
+            else if(transaction2.deliveryDate > transaction1.deliveryDate){
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        })
+        activeTransactions = activeTransactions.filter((activeTransaction, index) => index < 3)
+        const refillIcon = <FontAwesomeIcon icon={faRedo}></FontAwesomeIcon>
         const transactionElements = activeTransactions.map((transaction) =>
             <div className="transactionDetails" key={transaction.orderId}>
                 <div className="orderId"> {transaction.orderId}</div>
@@ -76,6 +90,7 @@ class Product extends React.Component {
                 <div className="deliveryDate">{transaction.deliveryDate}</div>
                 <div className="orderStatus">{transaction.orderStatus}</div>
                 <div className="noOfItems">{transaction.noOfItems}</div>
+                <div className="refillIcon">{refillIcon}</div>
             </div>);
             
 if(this.searchObject1)
@@ -109,6 +124,7 @@ if(this.searchObject1)
                             <div className="deliveryDate">Delivery Date</div>
                             <div className="orderStatus">Order Status</div>
                             <div className="noOfItems">No Of Items</div>
+                            <div className="refillIcon">Repeat Order</div>
                         </div>
                         {transactionElements.length !== 0 ? transactionElements : <div className="noTransactions">No Transactions</div>}
                     </div>
